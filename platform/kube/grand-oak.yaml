@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grand-oak-service
+  labels:
+    app: grand-oak-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grand-oak-service
+  template:
+    metadata:
+      labels:
+        app: grand-oak-service
+    spec:
+      containers:
+      - name: grand-oak-container
+        image: dhanikanovlisa/grand-oak-service:1.0
+        ports:
+        - containerPort: 3001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grand-oak-service
+  labels:
+    app: grand-oak-service
+spec:
+  selector:
+    app: grand-oak-service
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3001

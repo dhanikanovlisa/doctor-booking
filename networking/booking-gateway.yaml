@@ -1,0 +1,42 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: doctorbooking-gateway
+spec:
+  selector:
+    istio: ingressgateway  
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: doctor-booking
+spec:
+  hosts:
+  - "*" 
+  gateways:
+  - doctor-booking
+  http:
+  - match:
+    - uri:
+        prefix: "/grand-oak"
+    route:
+    - destination:
+        host: grand-oak-service.default.svc.cluster.local
+        port:
+          number: 3001
+  - match:
+    - uri:
+        prefix: "/pine-valley"
+    route:
+    - destination:
+        host: pine-valley-service.default.svc.cluster.local
+        port:
+          number: 3002
+
