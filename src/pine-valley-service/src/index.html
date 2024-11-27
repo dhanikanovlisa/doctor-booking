@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hospital Booking System</h1>
+
+        <h2>Available Slots</h2>
+        <table id="slotsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Time</th>
+                    <th>Doctor</th>
+                    <th>Specialty</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Slot rows will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const apiBaseUrl = "http://localhost:3002"; // API base URL
+
+        // Function to fetch available slots
+        async function fetchSlots() {
+            const response = await fetch(`${apiBaseUrl}/available-slots`);
+            const data = await response.json();
+            console.log(data)
+
+            const tableBody = document.querySelector("#slotsTable tbody");
+            tableBody.innerHTML = ""; // Clear existing rows
+
+            data.forEach(slot => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td>${slot.id}</td>
+                    <td>${slot.time}</td>
+                    <td>${slot.doctor}</td>
+                    <td>${slot.specialty}</td>
+                    <td>
+                        <button class="button" 
+                            onclick="bookSlot(${slot.id})">
+                            Book
+                        </button>
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to book a slot
+        async function bookSlot(slotId) {
+
+            const response = await fetch(`${apiBaseUrl}/book/${slotId}`, {
+                method: "POST"
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(`Booking successful!\nDoctor: ${data.data.doctor}\nTime: ${data.data.time}`);
+                fetchSlots();
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        }
+
+        // Load slots when page loads
+        window.onload = fetchSlots;
+    </script>
+</body>
+</html>

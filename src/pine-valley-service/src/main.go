@@ -48,7 +48,7 @@ func main() {
 	router.POST("/book/:id", func(c *gin.Context) {
 		slotID, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid slot ID"})
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid slot ID"})
 			return
 		}
 
