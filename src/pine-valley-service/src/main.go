@@ -1,70 +1,74 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 )
 
 type Slot struct {
-	ID     int    `json:"id"`
-	Time   string `json:"time"`
-	Doctor string `json:"doctor"`
+	ID        int    `json:"id"`
+	Time      string `json:"time"`
+	Doctor    string `json:"doctor"`
+	Specialty string `json:"specialty"`
 }
 
-type BookingRequest struct {
-	SlotID      int    `json:"slotId"`
-	PatientName string `json:"patientName"`
+// Mock data for available slots
+var slots = []Slot{
+	{ID: 1, Time: "09:00", Doctor: "Dr. Watson", Specialty: "Cardiology"},
+	{ID: 2, Time: "10:00", Doctor: "Dr. Watson", Specialty: "Cardiology"},
+	{ID: 3, Time: "11:00", Doctor: "Dr. Watson", Specialty: "Cardiology"},
+	{ID: 4, Time: "12:00", Doctor: "Dr. Brown", Specialty: "Dermatology"},
+	{ID: 5, Time: "11:00", Doctor: "Dr. White", Specialty: "Neurology"},
+	{ID: 6, Time: "09:00", Doctor: "Dr. Green", Specialty: "Neurology"},
+	{ID: 7, Time: "11:00", Doctor: "Dr. Black", Specialty: "Dermatology"},
+	{ID: 8, Time: "10:00", Doctor: "Dr. Blue", Specialty: "Gynecology"},
 }
 
 func main() {
-	// Available appointment slots
-	slots := []Slot{
-		{ID: 1, Time: "9:00 AM", Doctor: "Dr. Watson"},
-		{ID: 2, Time: "10:30 AM", Doctor: "Dr. Johnson"},
-	}
+	router := gin.Default()
+
+	// Enable CORS
+	router.Use(cors.Default())
 
 	// Welcome message handler
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		response := map[string]string{"message": "Welcome To Pine Valley Hospital Service"}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "Welcome To Pine Valley Hospital Service"})
 	})
 
-	// Available slots handler
-	http.HandleFunc("/available-slots", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(slots)
+	// Get available slots
+	router.GET("/available-slots", func(c *gin.Context) {
+		c.JSON(http.StatusOK, slots)
 	})
 
-	// Book appointment handler
-	http.HandleFunc("/book", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+	// Book a doctor slot
+	router.POST("/book/:id", func(c *gin.Context) {
+		slotID, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid slot ID"})
 			return
 		}
 
-		var booking BookingRequest
-		if err := json.NewDecoder(r.Body).Decode(&booking); err != nil {
-			http.Error(w, "Invalid input", http.StatusBadRequest)
-			return
+		for i, slot := range slots {
+			if slot.ID == slotID {
+				slots = append(slots[:i], slots[i+1:]...)
+
+				c.JSON(http.StatusOK, gin.H{
+					"message": "Appointment booked successfully",
+					"data":    slot,
+				})
+				return
+			}
 		}
 
-		if booking.SlotID == 0 || booking.PatientName == "" {
-			http.Error(w, "Invalid input", http.StatusBadRequest)
-			return
-		}
-
-		response := map[string]string{
-			"message": "Appointment booked successfully with ID " +
-				string(rune(booking.SlotID)) + " for " + booking.PatientName,
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+		c.JSON(http.StatusNotFound, gin.H{"message": "Slot ID not found"})
 	})
 
-	// Start the server
+	// Start server
 	port := ":3002"
 	log.Printf("Pine Valley Service running on http://localhost%s\n", port)
-	log.Fatal(http.ListenAndServe(port, nil))
+	router.Run(port)
 }
