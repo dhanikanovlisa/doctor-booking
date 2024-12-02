@@ -53,9 +53,7 @@ func main() {
 			}
 
 			// Respond with the list of available slots
-			c.JSON(http.StatusOK, gin.H{
-				"available_slots": availableSlots,
-			})
+			c.JSON(http.StatusOK, availableSlots)
 		})
 
 		// Book a doctor slot

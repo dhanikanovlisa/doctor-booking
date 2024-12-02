@@ -16,7 +16,8 @@ app.get("/doctor-booking", (_, res) => {
 
 // Fetch available slots from both services
 app.get("/doctor-booking/available-slots", async (req, res) => {
-    try {``
+    try {
+        console.log("tes");
         // Fetch data from both hospital services concurrently
         const [pineValleyResponse, grandOakResponse] = await Promise.all([
             axios.get(`${pineValleyService}/available-slots`),
@@ -44,28 +45,30 @@ app.get("/doctor-booking/available-slots", async (req, res) => {
 
 // Book an appointment by forwarding the request to the appropriate service
 app.post("/doctor-booking/book", async (req, res) => {
-    const { slotId, patientName, hospital } = req.body;
+    console.log("Request Body:", req.body);
 
-    // Validate input
-    if (!slotId || !patientName || !hospital) {
+    const slotId = parseInt(req.body.slotId, 10);
+    const { hospital } = req.body;
+
+    if (isNaN(slotId) || !hospital) {
+        console.error("Invalid input received:", { slotId, hospital });
         return res.status(400).json({ message: "Invalid input" });
     }
 
-    // Determine which hospital service to send the request to
     const serviceUrl =
         hospital === "Pine Valley"
-            ? `${pineValleyService}/book`
+            ? `${pineValleyService}/book/${slotId}`
             : hospital === "Grand Oak"
-            ? `${grandOakService}/book`
+            ? `${grandOakService}/book/${slotId}`
             : null;
 
     if (!serviceUrl) {
+        console.error("Invalid hospital name:", hospital);
         return res.status(400).json({ message: "Invalid hospital name" });
     }
 
     try {
-        // Forward the booking request to the corresponding service
-        const response = await axios.post(serviceUrl, { slotId, patientName });
+        const response = await axios.post(serviceUrl);
         res.json(response.data);
     } catch (error) {
         console.error("Error booking appointment:", error.message);

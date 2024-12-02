@@ -17,7 +17,7 @@ spec:
       serviceAccountName: grand-oak-service
       containers:
       - name: grand-oak-container
-        image: dhanikanovlisa/grand-oak-service:1.4
+        image: dhanikanovlisa/grand-oak-service:2.0
         ports:
         - containerPort: 8080
 ---
