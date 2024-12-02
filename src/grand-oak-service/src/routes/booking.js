@@ -12,18 +12,9 @@ router.get("/available-slots", (_, res) => {
 });
 
 // POST booking
-router.post("/booking", (req, res) => {
-  const schema = Joi.object({
-    slotId: Joi.number().required(),
-    patientName: Joi.string().min(3).required(),
-  });
+router.post("/book/:id", (req, res) => {
 
-  const { error } = schema.validate(req.body);
-  if (error) {
-    return res.status(400).json({ message: error.details[0].message });
-  }
-
-  const { slotId, patientName } = req.body;
+  const slotId = parseInt(req.params.id, 10);
   const slot = slots.find((slot) => slot.id === slotId);
 
   if (!slot) {
@@ -34,7 +25,6 @@ router.post("/booking", (req, res) => {
   }
 
   slot.booked = true;
-  slot.patientName = patientName;
 
   res.json({ message: `Appointment booked successfully`, slot });
 });

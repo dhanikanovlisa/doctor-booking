@@ -21,7 +21,7 @@ app.use('/',rootRoutes);
 })*/
 
 //Routes API
-app.use("/api", bookingRoutes);
+app.use("/grand-oak", bookingRoutes);
 /*
 app.get("/available-slots", (req, res) => {
     res.json([
