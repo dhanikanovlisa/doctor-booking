@@ -1,34 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pine-valley-service
+  name: pinevalleyservice
   labels:
-    app: pine-valley-service
+    app: pinevalleyservice
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: pine-valley-service
+      app: pinevalleyservice
   template:
     metadata:
       labels:
-        app: pine-valley-service
+        app: pinevalleyservice
     spec:
+      serviceAccountName: pine-valley-service
       containers:
       - name: pine-valley-container
-        image: dhanikanovlisa/pine-valley-service-go:1.0.1
+        image: dhanikanovlisa/pine-valley-service-go:1.4
         ports:
         - containerPort: 3002
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: pine-valley-service
+  name: pinevalleyservice
   labels:
-    app: pine-valley-service
+    app: pinevalleyservice
 spec:
   selector:
-    app: pine-valley-service
+    app: pinevalleyservice
   type: ClusterIP
   ports:
   - protocol: TCP

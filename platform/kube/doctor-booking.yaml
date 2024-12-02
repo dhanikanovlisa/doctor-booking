@@ -1,93 +1,45 @@
-
-
-##################################################################################################
-# Grand Oak Service
-##################################################################################################
-apiVersion: v1
-kind: Service
-metadata:
-  name: grand-oak-service
-  labels:
-    app: grand-oak-service
-    service: grand-oak-service
-spec:
-  ports:
-  - port: 3001
-    name: http
-  selector:
-    app: grand-oak-service
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: grand-oak-service
-  labels:
-    account: grand-oak-service
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: grand-oak-service
+  name: doctor-booking-service
   labels:
-    app: grand-oak-service
+    app: doctor-booking-service
+  annotations:
+    sidecar.istio.io/rewriteAppHTTPProbers: "true"
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: grand-oak-service
+      app: doctor-booking-service
   template:
     metadata:
       labels:
-        app: grand-oak-service
+        app: doctor-booking-service
     spec:
+      serviceAccountName: doctor-booking-service
       containers:
-      - name: grand-oak-container
-        image: dhanikanovlisa/grand-oak-service:1.0
+      - name: doctor-booking-container
+        image: dhanikanovlisa/doctor-booking:1.5
         ports:
-        - containerPort: 3001
+        - containerPort: 8080
+        env:
+        - name: PINE_VALLEY_SERVICE_URL
+          value: "http://pinevalleyservice/pine-valley"
+        - name: GRAND_OAK_SERVICE_URL
+          value: "http://grandoakservice/grand-oak"
+
 ---
-##################################################################################################
-# Pine Valley Service
-##################################################################################################
 apiVersion: v1
 kind: Service
 metadata:
-  name: pine-valley-service
+  name: doctor-booking-service
   labels:
-    app: pine-valley-service
-    service: pine-valley-service
+    app: doctor-booking-service
 spec:
+  selector:
+    app: doctor-booking-service
+  type: ClusterIP
   ports:
-  - port: 3002
-    name: http
-  selector:
-    app: pine-valley-service
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: pine-valley-service
-  labels:
-    account: pine-valley-service
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: pine-valley-service
-  labels:
-    app: pine-valley-service
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: pine-valley-service
-  template:
-    metadata:
-      labels:
-        app: pine-valley-service
-    spec:
-      containers:
-      - name: pine-valley-container
-        image: dhanikanovlisa/pine-valley-service-go:1.0.1
-        ports:
-        - containerPort: 3002
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
