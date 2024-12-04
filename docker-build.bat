@@ -1,6 +1,6 @@
 :: Set variables for image name and tag
 set IMAGE_NAME=grand-oak-service
-set IMAGE_TAG=2.0
+set IMAGE_TAG=2.1
 set DOCKERFILE_PATH=src/grand-oak-service
 set USER_NAME=dhanikanovlisa
 
@@ -44,7 +44,7 @@ echo Docker image %IMAGE_NAME%:%IMAGE_TAG% built and pushed successfully!
 
 :: Set variables for image name and tag
 set IMAGE_NAME=pine-valley-service-go
-set IMAGE_TAG=2.0
+set IMAGE_TAG=2.1
 set DOCKERFILE_PATH=src/pine-valley-service
 set USER_NAME=dhanikanovlisa
 
@@ -82,7 +82,7 @@ echo Docker image %IMAGE_NAME%:%IMAGE_TAG% built and pushed successfully!
 
 :: Set variables for image name and tag
 set IMAGE_NAME=doctor-booking
-set IMAGE_TAG=2.0
+set IMAGE_TAG=2.1
 set DOCKERFILE_PATH=src/doctor-booking
 set USER_NAME=dhanikanovlisa
 
