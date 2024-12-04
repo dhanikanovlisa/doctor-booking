@@ -1,4 +1,4 @@
-apiVersion: networking.istio.io/v1
+apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
   name: istio-gateway
@@ -13,7 +13,7 @@ spec:
     hosts:
     - "*"
 ---
-apiVersion: networking.istio.io/v1
+apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: doctor-booking-service
@@ -26,50 +26,46 @@ spec:
   - match:
     - uri:
         prefix: /doctor-booking
-    - uri:
-        prefix: /pine-valley
-    - uri:
-        prefix: /grand-oak
     route:
     - destination:
         host: doctor-booking-service
         port:
           number: 80
-# ---
-# apiVersion: networking.istio.io/v1beta1
-# kind: VirtualService
-# metadata:
-#   name: grand-oak-service
-# spec:
-#   hosts:
-#   - "*"
-#   gateways:
-#   - istio-gateway
-#   http:
-#   - match:
-#     - uri:
-#         prefix: /grand-oak
-#     route:
-#     - destination:
-#         host: grandoakservice
-#         port:
-#           number: 80
-# ---
-# apiVersion: networking.istio.io/v1beta1
-# kind: VirtualService
-# metadata:
-#   name: pine-valley-service
-# spec:
-#   hosts:
-#   - "*"
-#   gateways:
-#   - istio-gateway
-#   http:
-#   - match:
-#     - uri:
-#         prefix: /pine-valley
-#     route:
-#     - destination:
-#         host: pinevalleyservice
-#         port:
-#           number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: grand-oak-service
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - istio-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /grand-oak
+    route:
+    - destination:
+        host: grandoakservice
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: pine-valley-service
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - istio-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /pine-valley
+    route:
+    - destination:
+        host: pinevalleyservice
+        port:
+          number: 80
