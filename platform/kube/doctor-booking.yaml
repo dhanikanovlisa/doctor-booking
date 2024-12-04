@@ -19,7 +19,7 @@ spec:
       serviceAccountName: doctor-booking-service
       containers:
       - name: doctor-booking-container
-        image: dhanikanovlisa/doctor-booking:2.0
+        image: dhanikanovlisa/doctor-booking:2.1
         ports:
         - containerPort: 8080
         env:

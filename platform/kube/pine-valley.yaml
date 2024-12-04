@@ -17,7 +17,7 @@ spec:
       serviceAccountName: pine-valley-service
       containers:
       - name: pine-valley-container
-        image: dhanikanovlisa/pine-valley-service-go:2.0
+        image: dhanikanovlisa/pine-valley-service-go:2.1
         ports:
         - containerPort: 3002
 ---
